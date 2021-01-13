@@ -10,37 +10,35 @@ constexpr std::size_t MATRIX_DIM = 16;
 // 読み込み関数呼び出し回数
 constexpr std::size_t NUM_LOADFUNC_CALL = 1 << 20;
 
-namespace
-{
+namespace {
+
 template <class T>
-struct DeviceDeleter
-{
-	void operator()(T* ptr)
-	{
+struct DeviceDeleter {
+	void operator() (T* ptr) {
 		cudaFree(ptr);
 	}
 };
 
 template <class T>
-auto getDevicePtr(const std::size_t size)
-{
+auto getDevicePtr(const std::size_t size) {
 	T* ptr;
 	cudaMalloc((void**)&ptr, sizeof(T) * size);
 	return std::unique_ptr<T, DeviceDeleter<T>>{ptr};
 }
 
 // 自作のfragment読み込み関数
-__device__ void load_16x16_matrix(nvcuda::wmma::fragment<nvcuda::wmma::matrix_a, MATRIX_DIM, MATRIX_DIM, MATRIX_DIM, half, nvcuda::wmma::col_major> &fragment, const half* const memory_ptr)
+__device__ void load_16x16_matrix(nvcuda::wmma::fragment<nvcuda::wmma::matrix_a,
+                                  MATRIX_DIM, MATRIX_DIM, MATRIX_DIM, half,
+                                  nvcuda::wmma::col_major> &fragment,
+                                  const half* const memory_ptr)
 {
 	const auto warp_id = (blockIdx.x * blockDim.x + threadIdx.x) % warpSize;
 	const auto warp_mat_cols = (warp_id % 8) / 4 * 2 + (warp_id / 16);
 #pragma unroll
-	for(int i = 0; i < 4; i++)
-	{
+	for (int i = 0; i < 4; i++) {
 		const auto load_mat_rows = 4 * i + warp_id % 4;
 #pragma unroll
-		for(int j = 0; j < 4; j++)
-		{
+		for(int j = 0; j < 4; j++) {
 			const auto load_mat_cols = 4 * warp_mat_cols + j;
 			fragment.x[i * 4 + j] = __ldg(memory_ptr + MATRIX_DIM * load_mat_rows + load_mat_cols);
 		}
@@ -49,10 +47,9 @@ __device__ void load_16x16_matrix(nvcuda::wmma::fragment<nvcuda::wmma::matrix_a,
 }
 
 // fragment読み込み関数の速度比較用のカーネル関数
-__global__ void load_matrix_kernel(const half* const dA, const half* const dB)
-{
+__global__ void load_matrix_kernel(const half* const dA, const half* const dB) {
 	nvcuda::wmma::fragment<nvcuda::wmma::matrix_a, MATRIX_DIM, MATRIX_DIM, MATRIX_DIM, half, nvcuda::wmma::col_major> frag_c;
-	for(auto i = decltype(NUM_LOADFUNC_CALL)(0); i < NUM_LOADFUNC_CALL; i++)
+	for (auto i = decltype(NUM_LOADFUNC_CALL)(0); i < NUM_LOADFUNC_CALL; i++)
 #ifdef USE_WMMA
 		nvcuda::wmma::load_matrix_sync(frag_c, dA, MATRIX_DIM);
 #else
@@ -62,10 +59,7 @@ __global__ void load_matrix_kernel(const half* const dA, const half* const dB)
 }
 }
 
-
-
-int main()
-{
+int main() {
 	auto dMatA = getDevicePtr<half>(MATRIX_DIM * MATRIX_DIM);
 	auto dMatB = getDevicePtr<half>(MATRIX_DIM * MATRIX_DIM);
 
