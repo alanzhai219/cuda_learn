@@ -16,29 +16,7 @@ __global__ void vote_active() {
 }
 
 int main(int argc, char* argv[]) {
-    /*
-    const int n = 128;
-    const int m = 32;
 
-    // define ptr in host and device
-    int *h_a = static_cast<int*>(malloc(n*sizeof(int)));
-    int *h_b = static_cast<int*>(malloc(m*sizeof(int)));
-    int *d_a = nullptr;
-    int *d_b = nullptr;
-
-    // initialize data in host
-    std::iota(h_a, h_a+n, 0);
-    std::cout << "h_a data:";
-    for (auto i=0; i<n; ++i) {
-        if (i%32 == 0) {
-            std::cout << std::endl;
-        }
-        std::cout << std::setw(3) << h_a[i] << " ";
-    }
-
-    cudaMalloc(&d_a, n * sizeof(int));
-    cudaMemcpy(d_a, h_a, n*sizeof(int), cudaMemcpyHostToDevice);
-    */
     std::cout << "<<<1,64>>>\n";
     dim3 gridSize0(1);
     dim3 blockSize0(64);
