@@ -2,13 +2,31 @@
 #include <malloc.h>
 #include <cuda_runtime.h>
 
-__global__ void vote_all(int *a, int *b, int n)
-{
+__global__ void vote_all(int *a, int *b, int n) {
     int tid = threadIdx.x;
     if (tid > n)
         return;
     int temp = a[tid];
-    b[tid] = __all_sync(0xffffffff, temp > 48);// 注意添加了参数 mask
+    /*
+    * 1.threads in warp && mask -> real lane
+    * 2. if pred of 32 threads in the same warp is true , __all_sync returns true.
+    * 3. else returns false
+    */
+    /*
+    0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+    0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+    1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+    1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+    */
+    // b[tid] = __all_sync(0xffffffff, temp > 48);// 注意添加了参数 mask
+
+    /*
+    0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+    1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+    1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+    1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+    */
+    b[tid] = __all_sync(0xfffe0000, temp > 48);// 注意添加了参数 mask
 }
 
 __global__ void vote_any(int *a, int *b, int n)
@@ -48,32 +66,48 @@ __global__ void vote_active(int *a, int *b, int n)
     b[warpId] = __activemask() + warpId;
 }
 
-int main()
-{
+int main() {
     int *h_a, *h_b, *d_a, *d_b;
     int n = 128, m = 32;
     int nsize = n * sizeof(int);
 
     h_a = (int *)malloc(nsize);
     h_b = (int *)malloc(nsize);
-    for (int i = 0; i < n; ++i)
-        h_a[i] = i;
+
+    /*
+    * h_a
+    * 0,1,2,3,4,......, 127
+    */
+    for (int i = 0; i < n; ++i) {
+      h_a[i] = i;
+    }
+
+    /*
+    * h_b
+    * 0,0,0,0,0,.......,0
+    */
     memset(h_b, 0, nsize);
+
     cudaMalloc(&d_a, nsize);
     cudaMalloc(&d_b, nsize);
+
     cudaMemcpy(d_a, h_a, nsize, cudaMemcpyHostToDevice);
     cudaMemset(d_b, 0, nsize);
 
-    vote_all << <1, n >> >(d_a, d_b, n);
+    /*
+    * d_a: 0,1,2,3,....,127
+    * d_b: 0,0,0,0,....,0
+    * total threads: n
+    */
+    vote_all<<<1, n >>>(d_a, d_b, n);
     cudaMemcpy(h_b, d_b, nsize, cudaMemcpyDeviceToHost);
     printf("vote_all():");
-    for (int i = 0; i < n; ++i)
-    {
+    for (int i = 0; i < n; ++i) {
         if (!(i % m))
             printf("\n");
         printf("%d ", h_b[i]);
     }
-    printf("\n");
+    printf("\n-----------------------------\n");
 
     vote_any << <1, n >> >(d_a, d_b, n);
     cudaMemcpy(h_b, d_b, nsize, cudaMemcpyDeviceToHost);
