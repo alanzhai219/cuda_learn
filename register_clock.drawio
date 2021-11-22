@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2021-11-22T07:45:10.608Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36 Edg/94.0.992.31" etag="WekBVNxNmzENCFy6R-3y" version="15.5.9" type="github">
+<mxfile host="app.diagrams.net" modified="2021-11-22T07:48:29.954Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36 Edg/94.0.992.31" etag="sc3bVor2fkm70IbQhQm3" version="15.5.9" type="github">
   <diagram id="SI3XaiUDAbBVaC8Z4ORi" name="Page-1">
     <mxGraphModel dx="1350" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -39,6 +39,9 @@
         </mxCell>
         <mxCell id="dfrNIvbYqc1sZfVz5thz-34" value="&lt;b&gt;&lt;font style=&quot;font-size: 16px&quot;&gt;clock64&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=#9673a6;fillColor=#e1d5e7;" vertex="1" parent="1">
           <mxGeometry x="365" y="490" width="70" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="dfrNIvbYqc1sZfVz5thz-37" value="&lt;div class=&quot;container&quot; title=&quot;Hint: double-click to select code&quot;&gt;&lt;div class=&quot;line number1 index0 alt2&quot;&gt;&lt;code class=&quot;cpp plain&quot;&gt;&lt;font color=&quot;#b5739d&quot;&gt;asm&lt;/font&gt;(&lt;/code&gt;&lt;code class=&quot;cpp string&quot;&gt;&quot;mov.u32 %0, %clock;\n\t&quot;&lt;/code&gt; &lt;code class=&quot;cpp plain&quot;&gt;: &lt;/code&gt;&lt;code class=&quot;cpp string&quot;&gt;&quot;=r&quot;&lt;/code&gt;&lt;code class=&quot;cpp plain&quot;&gt;(clk_before));&lt;/code&gt;&lt;/div&gt;&lt;div class=&quot;line number2 index1 alt1&quot;&gt;&lt;code class=&quot;cpp plain&quot;&gt;&lt;font color=&quot;#b5739d&quot;&gt;asm&lt;/font&gt;(&lt;/code&gt;&lt;code class=&quot;cpp string&quot;&gt;&quot;tanh.approx.f32 %0, %1;\n\t&quot;&lt;/code&gt; &lt;code class=&quot;cpp plain&quot;&gt;: &lt;/code&gt;&lt;code class=&quot;cpp string&quot;&gt;&quot;=f&quot;&lt;/code&gt;&lt;code class=&quot;cpp plain&quot;&gt;(tmp) : &lt;/code&gt;&lt;code class=&quot;cpp string&quot;&gt;&quot;f&quot;&lt;/code&gt;&lt;code class=&quot;cpp plain&quot;&gt;(tmp));&lt;/code&gt;&lt;/div&gt;&lt;div class=&quot;line number3 index2 alt2&quot;&gt;&lt;code class=&quot;cpp plain&quot;&gt;&lt;font color=&quot;#b5739d&quot;&gt;asm&lt;/font&gt;(&lt;/code&gt;&lt;code class=&quot;cpp string&quot;&gt;&quot;mov.u32 %0, %clock;\n\t&quot;&lt;/code&gt; &lt;code class=&quot;cpp plain&quot;&gt;: &lt;/code&gt;&lt;code class=&quot;cpp string&quot;&gt;&quot;=r&quot;&lt;/code&gt;&lt;code class=&quot;cpp plain&quot;&gt;(clk_after));&amp;nbsp; &amp;nbsp;&lt;/code&gt;&lt;/div&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="80" y="560" width="570" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
