@@ -1,0 +1,3 @@
+nvcc -arch=sm_70 t304.cu
+
+row_major与col_major的存储，在物理逻辑上都是一维展开
